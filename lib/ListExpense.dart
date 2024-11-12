@@ -4,9 +4,11 @@ import 'package:todo_application_mobile/editExpense.dart';
 import 'package:todo_application_mobile/expense.dart';
 
 class ExpenseList extends StatefulWidget {
-  const ExpenseList({super.key, required this.expenses});
+  const ExpenseList(
+      {super.key, required this.expenses, required this.onUpdateTotal});
 
   final List<Expenses> expenses;
+  final Function(String?) onUpdateTotal;
 
   @override
   State<ExpenseList> createState() => _ExpenseListState();
@@ -17,6 +19,7 @@ class _ExpenseListState extends State<ExpenseList> {
     setState(() {
       widget.expenses[index] = updateItem;
     });
+    widget.onUpdateTotal(null);
   }
 
   void deleteExpense(int index) {
@@ -24,6 +27,7 @@ class _ExpenseListState extends State<ExpenseList> {
     setState(() {
       widget.expenses.removeAt(index);
     });
+    widget.onUpdateTotal(null);
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -59,6 +63,7 @@ class _ExpenseListState extends State<ExpenseList> {
               child: Card(
                 elevation: 7,
                 color: Colors.indigo,
+                margin: const EdgeInsets.only(bottom: 30),
                 child: SizedBox(
                   height: 130,
                   width: double.infinity,
