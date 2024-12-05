@@ -13,40 +13,40 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final List<Expenses> _expenses = [];
-  String? dropdownValue;
+  String? dropdownMonthValue;
 
   @override
   void initState() {
     super.initState();
-    dropdownValue = null;
+    dropdownMonthValue = null;
   }
 
   void _addExpenses(Expenses expense) {
     setState(() {
       _expenses.add(expense);
-      _calculateTotalForSelectedYear(dropdownValue);
+      _calculateTotalForSelectedMonth(dropdownMonthValue);
     });
   }
 
-  double _calculateTotalForSelectedYear(String? year) {
-    if (year == null) {
+  double _calculateTotalForSelectedMonth(String? month) {
+    if (month == null) {
       setState(() {});
       return _expenses.fold(0.0, (sum, item) => sum + item.price);
     }
     return _expenses
-        .where((expense) => DateFormat.y().format(expense.date) == year)
+        .where((expense) => DateFormat.M().format(expense.date) == month)
         .fold(0.0, (sum, item) => sum + item.price);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Créons une liste d'années uniques basées sur les dates des dépenses.
-    final years = _expenses
-        .map((item) => DateFormat.y().format(item.date))
+    // Créons une liste de mois uniques basés sur les dates des dépenses.
+    final months = _expenses
+        .map((item) => DateFormat.M().format(item.date))
         .toSet()
         .toList();
 
-    final totalSpent = _calculateTotalForSelectedYear(dropdownValue);
+    final totalSpent = _calculateTotalForSelectedMonth(dropdownMonthValue);
 
     return Scaffold(
       appBar: AppBar(
@@ -76,9 +76,9 @@ class _HomePageState extends State<HomePage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      dropdownValue == null
+                      dropdownMonthValue == null
                           ? const Text(
-                              "Filtrer par:  ",
+                              "Filtrer par mois:  ",
                               style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.indigo,
@@ -87,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                           : TextButton(
                               onPressed: () {
                                 setState(() {
-                                  dropdownValue = null;
+                                  dropdownMonthValue = null;
                                 });
                               },
                               child: const Text(
@@ -99,11 +99,11 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                       DropdownButton<String>(
-                        value: dropdownValue,
+                        value: dropdownMonthValue,
                         onChanged: (String? value) {
                           setState(() {
-                            dropdownValue = value;
-                            _calculateTotalForSelectedYear(dropdownValue);
+                            dropdownMonthValue = value;
+                            _calculateTotalForSelectedMonth(dropdownMonthValue);
                           });
                         },
                         underline: Container(
@@ -115,10 +115,10 @@ class _HomePageState extends State<HomePage> {
                           size: 25,
                           color: Colors.indigo,
                         ),
-                        items: years.map((year) {
+                        items: months.map((month) {
                           return DropdownMenuItem<String>(
-                            value: year,
-                            child: Text(year),
+                            value: month,
+                            child: Text(month),
                           );
                         }).toList(),
                       ),
@@ -151,8 +151,8 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 child: ExpenseList(
                   expenses: _expenses,
-                  onUpdateTotal: (year) {
-                    _calculateTotalForSelectedYear(year);
+                  onUpdateTotal: (month) {
+                    _calculateTotalForSelectedMonth(month);
                   },
                 ),
               ),

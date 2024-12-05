@@ -5,10 +5,14 @@ import 'package:todo_application_mobile/expense.dart';
 
 class ExpenseList extends StatefulWidget {
   const ExpenseList(
-      {super.key, required this.expenses, required this.onUpdateTotal});
+      {super.key,
+      required this.expenses,
+      required this.onUpdateTotal,
+      this.selectedMonth});
 
   final List<Expenses> expenses;
   final Function(String?) onUpdateTotal;
+  final String? selectedMonth;
 
   @override
   State<ExpenseList> createState() => _ExpenseListState();
@@ -49,11 +53,18 @@ class _ExpenseListState extends State<ExpenseList> {
     final formatDate = DateFormat.yMd();
     late Widget content;
 
-    if (widget.expenses.isNotEmpty) {
+    final filteredExpenses = widget.selectedMonth == null
+        ? widget.expenses
+        : widget.expenses
+            .where((expense) =>
+                DateFormat.M().format(expense.date) == widget.selectedMonth)
+            .toList();
+
+    if (filteredExpenses.isNotEmpty) {
       content = ListView.builder(
-          itemCount: widget.expenses.length,
+          itemCount: filteredExpenses.length,
           itemBuilder: (context, index) {
-            final expense = widget.expenses[index];
+            final expense = filteredExpenses[index];
             return Dismissible(
               key: Key(expense.id.toString()),
               background: Container(color: Colors.red),
@@ -89,7 +100,7 @@ class _ExpenseListState extends State<ExpenseList> {
                                 expense.title.toUpperCase(),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 25,
+                                  fontSize: 18,
                                   color: Colors.white,
                                 ),
                               ),
@@ -104,14 +115,14 @@ class _ExpenseListState extends State<ExpenseList> {
                           ),
                         ),
                         Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Text(
                               "${expense.price.toStringAsFixed(2)} F",
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18,
+                                fontSize: 15,
                               ),
                             ),
                             Row(
